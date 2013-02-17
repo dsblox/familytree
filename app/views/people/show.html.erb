@@ -1,0 +1,99 @@
+<p id="notice"><%= notice %></p>
+
+<h2>
+<% if @person.gender == Gender::MALE %>
+	<%= image_tag("male.gif", :size => "16x16") %>
+<% elsif @person.gender == Gender::FEMALE %>
+  <%= image_tag("female.gif", :size => "16x16") %>
+<% else %>
+  <%= image_tag("unisex.gif", :size => "16x16") %>
+<% end %>
+	<%= @person.title %>
+</h2>
+
+<h2>Family Ties</h2>
+<ul>
+<% @person.immediate_family.each do |relative, relation| %>
+<li><%= "#{relation}: " %><%= link_to "#{relative.title}", relative %></li>
+<% end %>
+<li><%= link_to 'Marry Someone', new_person_participation_path(@person, :event_type => "marry someone") %></li>
+<li><%= link_to 'Add a Child', new_person_participation_path(@person, :event_type => "have a kid") %></li>
+<li><%= link_to 'Add a Parent', new_person_participation_path(@person, :event_type => "add a parent") %></li>
+<li><%= link_to 'Record Death', new_person_participation_path(@person, :event_type => "die") %></li>
+</ul>
+
+<h2>Key Dates</h2>
+<table>
+<% @person.key_dates.each do |e| %>
+  <tr>
+	<td>&nbsp;*</td>
+	<td><%= e %></td>
+	<td><%= link_to 'remove participation', e.find_participation_by_person(@person), method: :delete, data: { confirm: 'Are you sure?' } %></td>
+	<td><%= link_to 'delete entire event', e, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+  </tr>
+<% end %>
+</table>
+
+<h2>My Descendants</h2>
+<% last_depth = 0 %>
+<ul>
+<% @person.descendants.each do |c,depth| %>
+<% p = c[0] %>
+<% if c.length > 1 %>
+   <% spouse_list = c[1] %>
+<% end %>
+<% if last_depth > depth %>
+    <% (last_depth - depth).times do %></ul><% end %>
+<% elsif last_depth < depth %>
+    <% (depth - last_depth).times do %><ul><% end %>
+<% end %>
+<% last_depth = depth %>
+<li>
+   <%= link_to p.name, p %>
+   <% if (!spouse_list.nil?) %> (m. 
+     <% spouse_list.each do |s| %>
+       <%= link_to s.name, s %>
+     <% end %>
+   )
+   <% end %>
+</li>
+<% end %>
+<% (last_depth+1).times do %>
+</ul>
+<% end %>
+</ul>
+
+<h2>My Ascendants</h2>
+<% last_depth = 0 %>
+<ul>
+<% @person.ascendants.each do |c,depth| %>
+<% p = c[0] %>
+<% if c.length > 1 %>
+   <% spouse_list = c[1] %>
+<% end %>
+<% if last_depth > depth %>
+  <% (last_depth - depth).times do %></ul><% end %>
+<% elsif last_depth < depth %>
+  <% (depth - last_depth).times do %><ul><% end %>
+<% end %>
+<% last_depth = depth %>
+<li>
+   <%= link_to p.name, p %>
+   <% if (!spouse_list.nil?) %> (m. 
+     <% spouse_list.each do |s| %>
+       <%= link_to s.name, s %>
+     <% end %>
+   )
+   <% end %>
+</li>
+<% end %>
+<% (last_depth+1).times do %>
+</ul>
+<% end %>
+</ul>
+
+
+<h2>More Links</h2>
+<%= link_to 'Edit', edit_person_path(@person) %> |
+<%= link_to 'Back', people_path %> |
+<%= link_to "Events", events_path %>

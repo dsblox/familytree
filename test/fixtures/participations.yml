@@ -1,0 +1,11 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
+
+one:
+  role: MyString
+  person: 
+  event: 
+
+two:
+  role: MyString
+  person: 
+  event: 

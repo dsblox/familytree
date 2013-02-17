@@ -1,0 +1,127 @@
+<%= form_for(@participation) do |f| %>
+
+<% if :event_type.nil? %>
+  <div class="field">
+	<%= f.label :event_type %><br />
+	<%= f.select :event_type, ["have a kid", "add a parent", "marry someone", "die"], :prompt => "Select Event Type:" %>
+  </div>
+<% else %>
+	<h3><%= @event_type %></h3>
+	<input type="hidden" name="participation[event_type]" value="<%= @event_type %>" >
+<% end %>
+
+<input type="hidden" name="person_id" value="<%= @person.id %>">
+
+
+<% if @event_type == "marry someone" %>
+  <div class="field">
+    <%= label_tag "Marriage Date:" %><br />
+    <%= select_date @participation.event_date, :prefix => :event_date, :start_year => 1900, :default => @participation.event_date, :include_blank => @participation.event_date.nil? %>
+  </div>
+  <h3>Select Person to Marry or Enter Their Name if Person is Not Yet Listed</h3>
+	<div class="field">
+		<%= f.label :person1_id %><br />
+		<%= f.select :person1_id, Person.all.map { |p| [p.short_name,p.id]}, :prompt => "Select Person:" %>
+	</div>
+    <div class="field">
+      <%= f.label :person1_full_name %><br />
+      <%= f.text_field :person1_full_name %>
+	</div>
+	
+	
+<% elsif @event_type == "have a kid" %>
+	<h3>Select an existing person as the child or enter a name and birthday to create the child</h3>
+  	<div class="field">
+		<%= f.label :person1_id %><br />
+		<%= f.select :person1_id, Person.all.map { |p| [p.short_name,p.id]}, :prompt => "Select Child:" %>
+ 	</div>
+    <div class="field">
+    	<%= f.label "Child Name" %><br />
+    	<%= f.text_field :person1_full_name %>
+	</div>
+ 	<div class="field">
+    	<%= label_tag "Child Birthdate" %><br />
+    	<%= select_date @participation.event_date, :prefix => :event_date, :start_year => 1900, :default => @participation.event_date, :include_blank => @participation.event_date.nil? %>
+  	</div>
+	<h3>Optionally select an existing person as the other parent or enter a name to create the other parent</h3>
+	<div class="field">
+		<%= f.label :person2_id %><br />
+		<%= f.select :person2_id, Person.all.map { |p| [p.short_name,p.id]}, :prompt => "Other Parent:" %>
+ 	</div>
+	<div class="field">
+		<%= f.label "Other Parent Name" %><br />
+		<%= f.text_field :person2_full_name %>
+	</div>
+	
+	
+<% elsif @event_type == "add a parent" %>
+	<h3>Select existing people as the parents or enter names to create parents</h3>
+  	<div class="field">
+		<%= f.label :person1_id %><br />
+		<%= f.select :person1_id, Person.all.map { |p| [p.short_name,p.id]}, :prompt => "Select Parent:" %>
+	</div>
+ 	<div class="field">
+	<%= f.label :person2_id %><br />
+	<%= f.select :person2_id, Person.all.map { |p| [p.short_name,p.id]}, :prompt => "Select Parent:" %>
+ 	</div>
+ 	<div class="field">
+ 		<%= f.label "Parent Full Name" %><br />
+ 		<%= f.text_field :person1_full_name %>
+	</div>
+ 	<div class="field">
+		<%= f.label "Parent Full Name" %><br />
+    	<%= f.text_field :person2_full_name %>
+	</div>
+	<% if @person.birth_event.nil? || @person.birth_event.startDate.nil? %>
+		<h3>Please specify the birthdate of the person if known</h3>
+		<div class="field">
+	    	<%= label_tag :event_date %><br />
+	    	<%= select_date @participation.event_date, :prefix => :event_date, :start_year => 1900, :default => @participation.event_date, :include_blank => @participation.event_date.nil? %>
+	  	</div>	
+	<% end %>
+
+
+<% elsif @event_type == "die" %>
+	<% if @person.death_event.nil? || @person.death_event.startDate.nil? %>
+		<h3>Please specify the date this person died</h3>
+	<% else %>
+        <h3>Use the field below to update the date that this person died</h3>
+	<% end %>
+		<div class="field">
+	    	<%= label_tag :event_date %><br />
+		    <%= select_date @participation.event_date, :prefix => :event_date, :start_year => 1900, :default => @participation.event_date, :include_blank => @participation.event_date.nil? %>
+	  	</div>	
+
+	
+	
+<% else %>
+  <div class="field">
+    <%= label_tag :event_id %><br />
+	<%= f.select :event_id, Event.all.map { |e| [e,e.id]}, :prompt => "Select Event:" %>
+  </div>
+  <div class="field">
+    <%= label_tag :event_date %><br />
+    <%= select_date @participation.event_date, :prefix => :event_date, :start_year => 1900, :default => @participation.event_date, :include_blank => @participation.event_date.nil? %>
+  </div>
+  <div class="field">
+	<%= f.label :person1_id %><br />
+	<%= f.select :person1_id, Person.all.map { |p| [p.short_name,p.id]}, :prompt => "Select Person:" %>
+  </div>
+  <div class="field">
+	<%= f.label :person2_id %><br />
+	<%= f.select :person2_id, Person.all.map { |p| [p.short_name,p.id]}, :prompt => "Select Person:" %>
+  </div>
+  <div class="field">
+    <%= f.label :person1_full_name %><br />
+    <%= f.text_field :person1_full_name %>
+	</div>
+  <div class="field">
+    <%= f.label :person2_full_name %><br />
+    <%= f.text_field :person2_full_name %>
+	</div>
+<% end %>
+
+  <div class="actions">
+    <%= f.submit %>
+  </div>
+<% end %>
